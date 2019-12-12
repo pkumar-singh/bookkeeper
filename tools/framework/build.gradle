@@ -1,0 +1,16 @@
+plugins {
+    id 'java'
+}
+
+dependencies {
+    implementation project(":bookkeeper-common")
+    compileOnly depLibs.lombok
+    compileOnly depLibs.spotbugsAnnotations
+    implementation depLibs.commonsConfiguration
+    implementation depLibs.guava
+    implementation depLibs.jcommander
+    implementation depLibs.slf4j
+    testImplementation depLibs.junit
+
+    annotationProcessor depLibs.lombok
+}

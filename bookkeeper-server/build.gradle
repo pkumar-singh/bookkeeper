@@ -1,0 +1,68 @@
+plugins {
+    id 'java'
+}
+
+dependencies {
+    implementation project(':bookkeeper-common')
+    implementation project(':bookkeeper-common-allocator')
+    implementation project(':bookkeeper-http:http-server')
+    implementation project(':bookkeeper-proto')
+    implementation project(':bookkeeper-stats')
+    implementation project(':circe-checksum')
+    implementation project(':cpu-affinity')
+    implementation project(':tools:framework')
+
+    compileOnly depLibs.lombok
+    compileOnly depLibs.spotbugsAnnotations
+    implementation depLibs.bcpkixJdk15on
+    implementation depLibs.bcproveExtJdk15on
+    implementation depLibs.commonsCli
+    implementation depLibs.commonsCodec
+    implementation depLibs.commonsCollections4
+    implementation depLibs.commonsConfiguration
+    implementation depLibs.commonsIO
+    implementation depLibs.commonsLang3
+    implementation depLibs.commonsLang3
+    implementation depLibs.guava
+    implementation depLibs.httpclient
+    implementation depLibs.jacksonAnnotations
+    implementation depLibs.jcommander
+    implementation depLibs.jctools
+    implementation depLibs.jna
+    implementation depLibs.nettyHandler
+    implementation depLibs.nettyTcnativeBoringSsl
+    implementation depLibs.nettyTransportNativeEpoll
+    implementation depLibs.protobuf
+    implementation depLibs.rocksDb
+    implementation depLibs.zookeeper
+
+    testImplementation project(':bookkeeper-stats-providers:prometheus-metrics-provider')
+    testImplementation project(path: ':bookkeeper-common', configuration: 'testArtifacts')
+
+    testCompileOnly depLibs.lombok
+    testImplementation depLibs.hamcrest
+    testImplementation depLibs.jacksonDatabind
+    testImplementation depLibs.junit
+    testImplementation depLibs.junitFoundation
+    testImplementation depLibs.kerbySimpleKdc
+    testImplementation depLibs.mockito
+    testImplementation depLibs.powermockJunit
+    testImplementation depLibs.powermockMockito
+    testImplementation depLibs.zookeeperTest
+
+    annotationProcessor depLibs.lombok
+    testAnnotationProcessor depLibs.lombok
+}
+
+test {
+    maxHeapSize = '2G'
+    forkEvery = 1
+}
+
+test.doFirst {
+    def junitFoundation = configurations.testCompileClasspath.resolvedConfiguration
+        .resolvedArtifacts.find { it.name == 'junit-foundation' }
+    jvmArgs("-javaagent:${junitFoundation.file}", "-Djunit.timeout.test=600000", "-Djunit.max.retry=3",
+            "-Djava.net.preferIPv4Stack=true", "-Dio.netty.leakDetection.level=paranoid")
+}
+

@@ -1,0 +1,30 @@
+plugins {
+    id 'java'
+}
+
+dependencies {
+    compileOnly depLibs.lombok
+    compileOnly depLibs.spotbugsAnnotations
+    implementation depLibs.commonsLang3
+    implementation depLibs.guava
+    implementation depLibs.slf4j
+    testImplementation depLibs.junit
+
+    annotationProcessor depLibs.lombok
+}
+
+task generateJniHeaders(type:Exec) {
+    ext {
+        javahOutputDir = "$buildDir/javahGenerated"
+    }
+    dependsOn classes
+    def classpath = sourceSets.main.output.classesDirs.join(":")
+    commandLine("javah", "-d", javahOutputDir, "-classpath",
+                classpath, "org.apache.bookkeeper.common.util.affinity.impl.CpuAffinityJni")
+}
+
+jar {
+    from (tasks.getByPath(":cpu-affinity:src:main:affinity:linkRelease").outputs.files.filter { f -> f.isFile()} ) {
+        into "/lib"
+    }
+}

@@ -1,0 +1,20 @@
+import org.gradle.internal.jvm.Jvm
+
+plugins {
+    id 'cpp-library'
+}
+
+library {
+    binaries.configureEach { CppBinary binary ->
+        def compileTask = binary.compileTask.get()
+        compileTask.dependsOn project(':cpu-affinity').generateJniHeaders
+        compileTask.includes.from("${Jvm.current().javaHome}/include",
+                                  project(':cpu-affinity').generateJniHeaders.javahOutputDir)
+        compileTask.includes.from("${Jvm.current().javaHome}/include/linux")
+        compileTask.includes.from("${Jvm.current().javaHome}/include/darwin")
+        compileTask.source.from fileTree(dir: "cpp", include: "**/*.c")
+
+        compileTask.compilerArgs.addAll(["-x", "c", "-std=c11"])
+    }
+}
+

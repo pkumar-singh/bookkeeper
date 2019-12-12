@@ -1,0 +1,14 @@
+plugins {
+    id 'com.google.protobuf'
+    id 'java'
+}
+
+dependencies {
+    implementation depLibs.protobuf
+}
+
+protobuf {
+    protoc {
+        artifact = depLibs.protoc
+    }
+}

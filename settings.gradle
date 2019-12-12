@@ -1,0 +1,9 @@
+rootProject.name = 'bookkeeper'
+
+include('circe-checksum', 'circe-checksum:src:main:circe',
+        'cpu-affinity', 'cpu-affinity:src:main:affinity', 'bookkeeper-common',
+        'bookkeeper-http:http-server', 'bookkeeper-server',
+        'bookkeeper-common-allocator', 'bookkeeper-proto', 'bookkeeper-stats',
+        'bookkeeper-stats-providers:prometheus-metrics-provider',
+        'tools:framework')
+

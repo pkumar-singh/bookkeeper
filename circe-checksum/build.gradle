@@ -1,0 +1,27 @@
+plugins {
+    id 'java'
+}
+
+dependencies {
+    implementation depLibs.guava
+    implementation depLibs.nettyBuffer
+    implementation depLibs.slf4j
+    testImplementation depLibs.junit
+    testImplementation depLibs.mockito
+}
+
+task generateJniHeaders(type:Exec) {
+    ext {
+        javahOutputDir = "$buildDir/javahGenerated"
+    }
+    dependsOn classes
+    def classpath = sourceSets.main.output.classesDirs.join(":")
+    commandLine("javah", "-d", javahOutputDir, "-classpath",
+                classpath, "com.scurrilous.circe.crc.Sse42Crc32C")
+}
+
+jar {
+    from (tasks.getByPath(":circe-checksum:src:main:circe:linkRelease").outputs.files.filter { f -> f.isFile()} ) {
+        into "/lib"
+    }
+}

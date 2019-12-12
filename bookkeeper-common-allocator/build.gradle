@@ -1,0 +1,10 @@
+plugins {
+    id 'java'
+}
+
+dependencies {
+    implementation depLibs.nettyBuffer
+    implementation depLibs.slf4j
+    testImplementation depLibs.junit
+    testImplementation depLibs.mockito
+}

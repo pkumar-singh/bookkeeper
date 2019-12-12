@@ -1,0 +1,16 @@
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath 'com.google.protobuf:protobuf-gradle-plugin:0.8.10'
+    }
+}
+
+allprojects {
+    apply from: "$rootDir/dependencies.gradle"
+
+    repositories {
+        jcenter()
+    }
+}

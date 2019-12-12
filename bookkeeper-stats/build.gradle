@@ -1,0 +1,8 @@
+plugins {
+    id 'java'
+}
+
+dependencies {
+    implementation depLibs.commonsConfiguration
+    implementation depLibs.slf4j
+}

@@ -1,0 +1,11 @@
+plugins {
+    id 'java'
+}
+
+dependencies {
+    implementation depLibs.commonsConfiguration
+    implementation depLibs.jacksonCore
+    implementation depLibs.jacksonDatabind
+    implementation depLibs.jacksonAnnotations
+    implementation depLibs.slf4j
+}

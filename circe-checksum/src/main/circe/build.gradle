@@ -1,0 +1,22 @@
+import org.gradle.internal.jvm.Jvm
+
+plugins {
+    id 'cpp-library'
+}
+
+library {
+    baseName = 'circe-checksum'
+
+    binaries.configureEach { CppBinary binary ->
+        def compileTask = binary.compileTask.get()
+        compileTask.dependsOn project(':circe-checksum').generateJniHeaders
+        compileTask.includes.from("${Jvm.current().javaHome}/include",
+                                  project(':circe-checksum').generateJniHeaders.javahOutputDir)
+
+        compileTask.includes.from("${Jvm.current().javaHome}/include/linux")
+        compileTask.includes.from("${Jvm.current().javaHome}/include/darwin")
+
+        compileTask.source.from fileTree(dir: "cpp", include: "**/*.cpp")
+        compileTask.compilerArgs.addAll(["-msse4.2", "-mpclmul", "-O3"])
+    }
+}

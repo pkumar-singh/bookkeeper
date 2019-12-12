@@ -1,0 +1,17 @@
+plugins {
+    id 'java'
+}
+
+dependencies {
+    implementation project(":bookkeeper-stats")
+    implementation depLibs.commonsConfiguration
+    implementation depLibs.guava
+    implementation depLibs.jettyServlet
+    implementation depLibs.nettyCommon
+    implementation depLibs.prometheusSimpleClient
+    implementation depLibs.prometheusSimpleClientHotspot
+    implementation depLibs.prometheusSimpleClientServlet
+    implementation depLibs.slf4j
+    implementation depLibs.yahooDatasketches
+    testImplementation depLibs.junit
+}
