@@ -30,6 +30,8 @@ import static org.apache.bookkeeper.stream.protocol.util.ProtoUtils.createGetStr
 
 import com.google.common.annotations.VisibleForTesting;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.bookkeeper.clients.exceptions.ClientException;
@@ -62,12 +64,14 @@ import org.apache.bookkeeper.stream.proto.storage.StatusCode;
 class RootRangeClientImpl implements RootRangeClient {
 
     private final ScheduledExecutorService executor;
+    private final Executor gRPCExecutor;
     private final StorageContainerChannel scClient;
 
     RootRangeClientImpl(OrderedScheduler scheduler,
                         StorageContainerChannelManager channelManager) {
         this.executor = scheduler.chooseThread(ROOT_STORAGE_CONTAINER_ID);
         this.scClient = channelManager.getOrCreate(ROOT_STORAGE_CONTAINER_ID);
+        this.gRPCExecutor = Executors.newCachedThreadPool();
     }
 
     @VisibleForTesting
@@ -79,7 +83,6 @@ class RootRangeClientImpl implements RootRangeClient {
         CreateRequestFunc<ReqT> createRequestFunc,
         ProcessRequestFunc<ReqT, RespT, RootRangeServiceFutureStub> processRequestFunc,
         ProcessResponseFunc<RespT, T> processResponseFunc) {
-
         CompletableFuture<T> result = FutureUtils.<T>createFuture()
             .whenComplete((v, cause) -> {
                 if (null != cause && isContainerNotFound(cause)) {
@@ -95,6 +98,7 @@ class RootRangeClientImpl implements RootRangeClient {
                 return;
             }
             RpcUtils.processRpc(
+                gRPCExecutor,
                 rsChannel.getRootRangeService(),
                 result,
                 createRequestFunc,

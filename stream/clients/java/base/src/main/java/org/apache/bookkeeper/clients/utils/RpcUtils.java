@@ -20,7 +20,11 @@ import com.google.common.util.concurrent.ListenableFuture;
 import io.grpc.Status;
 import io.grpc.StatusException;
 import io.grpc.StatusRuntimeException;
+import org.apache.bookkeeper.stream.proto.storage.GetStreamResponse;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
 
 /**
  * RPC related utils.
@@ -61,7 +65,7 @@ public class RpcUtils {
         }
     }
 
-    public static <T, ReqT, RespT, ServiceT> void processRpc(
+    public static <T, ReqT, RespT, ServiceT> void processRpc(Executor executor,
         ServiceT service,
         CompletableFuture<T> result,
         CreateRequestFunc<ReqT> createRequestFunc,
@@ -70,6 +74,7 @@ public class RpcUtils {
         ReqT request = createRequestFunc.apply();
         ListenableFuture<RespT> resultFuture =
             processRequestFunc.process(service, request);
+
         Futures.addCallback(
             resultFuture,
             new FutureCallback<RespT>() {
@@ -82,7 +87,7 @@ public class RpcUtils {
                 public void onFailure(Throwable throwable) {
                     GrpcUtils.processRpcException(throwable, result);
                 }
-            }
+            }, executor
         );
     }
 
